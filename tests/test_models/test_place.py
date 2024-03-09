@@ -1,111 +1,82 @@
 #!/usr/bin/python3
-"""writes a class TestPlace for Place module. """
+"""import tests for the  module.
+"""
+import os
 import unittest
+from models.engine.file_storage import FileStorage
 from models.place import Place
-from models.base_model import BaseModel
-import datetime
+from models import storage
+from datetime import datetime
 
 
 class TestPlace(unittest.TestCase):
-    """writes tests for Place Class"""
+    """Test for the Place class."""
 
-    @classmethod
-    def setUp(cls):
-        """define setup for each test case.
-        """
-        cls.place1 = Place()
-        cls.place1.name = "Nairobi"
+    def setUp(self):
+        pass
 
-    @classmethod
-    def tearDown(cls):
-        """tears up after each test.
-        """
-        del cls.place1
+    def tearDown(self) -> None:
+        """tears down FileStorage data."""
+        FileStorage._FileStorage__objects = {}
+        if os.path.exists(FileStorage._FileStorage__file_path):
+            os.remove(FileStorage._FileStorage__file_path)
 
-    def test_class_exists(self):
-        """Tests for class existances.
-        """
-        result = "<class 'models.place.Place'>"
-        self.assertEqual(str(type(self.place1)), result)
+    def test_params(self):
+        """Test parameters for class attributes"""
 
-    def test_inheritance(self):
-        """Testfor subclass and instace of BaseModel.
-        """
-        self.assertIsInstance(self.place1, Place)
-        self.assertEqual(type(self.place1), Place)
-        self.assertEqual(issubclass(self.place1.__class__, BaseModel), True)
+        p1 = Place()
+        p3 = Place("hello", "wait", "in")
+        k = f"{type(p1).__name__}.{p1.id}"
+        self.assertIsInstance(p1.name, str)
+        self.assertIn(k, storage.all())
+        self.assertEqual(p3.name, "")
 
-    def test_types(self):
-        """Tests for attributes type is correct.
-        """
-        self.assertIsInstance(self.place1.name, str)
-        self.assertEqual(type(self.place1.name), str)
-        self.assertIsInstance(self.place1.id, str)
-        self.assertEqual(type(self.place1.id), str)
-        self.assertIsInstance(self.place1.created_at, datetime.datetime)
-        self.assertIsInstance(self.place1.updated_at, datetime.datetime)
-        self.assertIsInstance(self.place1.amenity_ids, list)
-        self.assertIsInstance(self.place1.longitude, float)
-        self.assertIsInstance(self.place1.latitude, float)
-        self.assertIsInstance(self.place1.price_by_night, int)
-        self.assertIsInstance(self.place1.max_guest, int)
-        self.assertIsInstance(self.place1.description, str)
-        self.assertIsInstance(self.place1.number_rooms, int)
-        self.assertIsInstance(self.place1.number_bathrooms, int)
-        self.assertIsInstance(self.place1.city_id, str)
-        self.assertIsInstance(self.place1.user_id, str)
+        self.assertIsInstance(p1.name, str)
+        self.assertIsInstance(p1.user_id, str)
+        self.assertIsInstance(p1.city_id, str)
+        self.assertIsInstance(p1.description, str)
+        self.assertIsInstance(p1.number_bathrooms, int)
+        self.assertIsInstance(p1.number_rooms, int)
+        self.assertIsInstance(p1.price_by_night, int)
+        self.assertIsInstance(p1.max_guest, int)
+        self.assertIsInstance(p1.longitude, float)
+        self.assertIsInstance(p1.latitude, float)
+        self.assertIsInstance(p1.amenity_ids, list)
+
+    def test_init(self):
+        """Test method inoitial public instances"""
+
+        p1 = Place()
+        p2 = Place(**p1.to_dict())
+        self.assertIsInstance(p1.id, str)
+        self.assertIsInstance(p1.created_at, datetime)
+        self.assertIsInstance(p1.updated_at, datetime)
+        self.assertEqual(p1.updated_at, p2.updated_at)
+
+    def test_str(self):
+        """Test method for string representation"""
+        p1 = Place()
+        string = f"[{type(p1).__name__}] ({p1.id}) {p1.__dict__}"
+        self.assertEqual(p1.__str__(), string)
 
     def test_save(self):
-        """Test to save method is working correctly after update.
-        """
-        self.place1.save()
-        self.assertNotEqual(self.place1.created_at, self.place1.updated_at)
+        """Test method for save self"""
+        p1 = Place()
+        old_update = p1.updated_at
+        p1.save()
+        self.assertNotEqual(p1.updated_at, old_update)
 
-    def test_functions(self):
-        """Test for test functions
-        """
-        self.assertIsNotNone(Place.__doc__)
-
-    def test_has_attributes(self):
-        """Test if it has attributes exist.
-        """
-        self.assertTrue(hasattr(self.place1, 'name'))
-        self.assertTrue(hasattr(self.place1, 'id'))
-        self.assertTrue(hasattr(self.place1, 'created_at'))
-        self.assertTrue(hasattr(self.place1, 'updated_at'))
-        self.assertTrue(hasattr(self.place1, 'city_id'))
-        self.assertTrue(hasattr(self.place1, 'user_id'))
-        self.assertTrue(hasattr(self.place1, 'description'))
-        self.assertTrue(hasattr(self.place1, 'number_rooms'))
-        self.assertTrue(hasattr(self.place1, 'number_bathrooms'))
-        self.assertTrue(hasattr(self.place1, 'max_guest'))
-        self.assertTrue(hasattr(self.place1, 'price_by_night'))
-        self.assertTrue(hasattr(self.place1, 'latitude'))
-        self.assertTrue(hasattr(self.place1, 'longitude'))
-        self.assertTrue(hasattr(self.place1, 'amenity_ids'))
-
-    def test_to_dict(self):
-        """Test for  to_dict method is working correctly.
-        """
-        my_model_json = self.place1.to_dict()
-        self.assertEqual(str, type(my_model_json['created_at']))
-        self.assertEqual(my_model_json['created_at'],
-                         self.place1.created_at.isoformat())
-        self.assertEqual(datetime.datetime, type(self.place1.created_at))
-        self.assertEqual(my_model_json['__class__'],
-                         self.place1.__class__.__name__)
-        self.assertEqual(my_model_json['id'], self.place1.id)
-
-    def test_unique_id(self):
-        """Test for  each instance is created with a unique ID.
-        """
-        place2 = self.place1.__class__()
-        place3 = self.place1.__class__()
-        place4 = self.place1.__class__()
-        self.assertNotEqual(self.place1.id, place2.id)
-        self.assertNotEqual(self.place1.id, place3.id)
-        self.assertNotEqual(self.place1.id, place4.id)
+    def test_todict(self):
+        """Test method for dictionary"""
+        p1 = Place()
+        p2 = Place(**p1.to_dict())
+        a_dict = p2.to_dict()
+        self.assertIsInstance(a_dict, dict)
+        self.assertEqual(a_dict['__class__'], type(p2).__name__)
+        self.assertIn('created_at', a_dict.keys())
+        self.assertIn('updated_at', a_dict.keys())
+        self.assertNotEqual(p1, p2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

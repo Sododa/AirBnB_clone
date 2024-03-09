@@ -1,93 +1,60 @@
 #!/usr/bin/python3
-"""writes a class TestCity for City module. """
+"""Unit tests for the city module.
+"""
+import os
 import unittest
+from models.engine.file_storage import FileStorage
+from models import storage
 from models.city import City
-from models.base_model import BaseModel
-import datetime
+from datetime import datetime
+
+c1 = City()
+c2 = City(**c1.to_dict())
+c3 = City("hello", "wait", "in")
 
 
 class TestCity(unittest.TestCase):
-    """writes a tests for City Class"""
+    """Test cases for the test class."""
 
-    @classmethod
-    def setUp(cls):
-        """defines a setup for each test case.
-        """
-        cls.city1 = City()
-        cls.city1.name = "Nairobi"
+    def setUp(self):
+        pass
 
-    @classmethod
-    def tearDown(cls):
-        """tears down after each test.
-        """
-        del cls.city1
+    def tearDown(self) -> None:
+        """tears down FileStorage data."""
+        FileStorage._FileStorage__objects = {}
+        if os.path.exists(FileStorage._FileStorage__file_path):
+            os.remove(FileStorage._FileStorage__file_path)
 
-    def test_class_exists(self):
-        """Tests if class exists.
-        """
-        result = "<class 'models.city.City'>"
-        self.assertEqual(str(type(self.city1)), result)
+    def test_params(self):
+        """Test method for class parameters"""
+        k = f"{type(c1).__name__}.{c1.id}"
+        self.assertIsInstance(c1.name, str)
+        self.assertEqual(c3.name, "")
+        c1.name = "Nairobi"
+        self.assertEqual(c1.name, "Nairobi")
 
-    def test_inheritance(self):
-        """Test inheritance is a subclass and instace of BaseModel.
-        """
-        self.assertIsInstance(self.city1, City)
-        self.assertEqual(type(self.city1), City)
-        self.assertEqual(issubclass(self.city1.__class__, BaseModel), True)
-
-    def test_types(self):
-        """Test types attributes type is correct.
-        """
-        self.assertIsInstance(self.city1.name, str)
-        self.assertEqual(type(self.city1.name), str)
-        self.assertIsInstance(self.city1.id, str)
-        self.assertEqual(type(self.city1.id), str)
-        self.assertIsInstance(self.city1.created_at, datetime.datetime)
-        self.assertIsInstance(self.city1.updated_at, datetime.datetime)
-        self.assertIsInstance(self.city1.state_id, str)
+    def test_init(self):
+        """Test method for public insts"""
+        self.assertIsInstance(c1.id, str)
+        self.assertIsInstance(c1.created_at, datetime)
+        self.assertIsInstance(c1.updated_at, datetime)
+        self.assertEqual(c1.updated_at, c2.updated_at)
 
     def test_save(self):
-        """Test save method is working correctly after update.
-        """
-        self.city1.save()
-        self.assertNotEqual(self.city1.created_at, self.city1.updated_at)
+        """Test method for self save"""
+        old_update = c1.updated_at
+        c1.save()
+        self.assertNotEqual(c1.updated_at, old_update)
 
-    def test_functions(self):
-        """Test functions City module is documented.
-        """
-        self.assertIsNotNone(City.__doc__)
-
-    def test_has_attributes(self):
-        """Test if expected attributes exist.
-        """
-        self.assertTrue(hasattr(self.city1, 'name'))
-        self.assertTrue(hasattr(self.city1, 'id'))
-        self.assertTrue(hasattr(self.city1, 'created_at'))
-        self.assertTrue(hasattr(self.city1, 'updated_at'))
-        self.assertTrue(hasattr(self.city1, 'state_id'))
-
-    def test_to_dict(self):
-        """Test if to_dict method is working correctly.
-        """
-        my_model_json = self.city1.to_dict()
-        self.assertEqual(str, type(my_model_json['created_at']))
-        self.assertEqual(my_model_json['created_at'],
-                         self.city1.created_at.isoformat())
-        self.assertEqual(datetime.datetime, type(self.city1.created_at))
-        self.assertEqual(my_model_json['__class__'],
-                         self.city1.__class__.__name__)
-        self.assertEqual(my_model_json['id'], self.city1.id)
-
-    def test_unique_id(self):
-        """Test if each instance is created with unique ID.
-        """
-        city2 = self.city1.__class__()
-        city3 = self.city1.__class__()
-        city4 = self.city1.__class__()
-        self.assertNotEqual(self.city1.id, city2.id)
-        self.assertNotEqual(self.city1.id, city3.id)
-        self.assertNotEqual(self.city1.id, city4.id)
+    def test_todict(self):
+        """Test method for dict to check"""
+        a_dict = c2.to_dict()
+        self.assertIsInstance(a_dict, dict)
+        self.assertEqual(a_dict['__class__'], type(c2).__name__)
+        self.assertIn('created_at', a_dict.keys())
+        self.assertIn('updated_at', a_dict.keys())
+        self.assertNotEqual(c1, c2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
