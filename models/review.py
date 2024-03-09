@@ -5,8 +5,7 @@ from models.base_model import BaseModel
 
 class Review (BaseModel):
     """
-        place_id (string): id of city.
-        user_id (string): id of user.
+        place_id (string): id of ci
         text (string): just a text.
     """
     place_id = ""
