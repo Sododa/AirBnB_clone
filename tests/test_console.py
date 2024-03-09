@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""unittests for console.py, all features"""
+"""unittests for coinsole.py, all features"""
 import unittest
 import pep8
 import console
