@@ -1,6 +1,8 @@
 #!/usr/bin/python3
-"""assign with an uuid when an instance is created
+"""file storage for the app.
 """
+
+
 from models.engine.file_storage import FileStorage
 
 storage = FileStorage()

@@ -1,12 +1,17 @@
 #!/usr/bin/python3
-"""inherits from BaseModel"""
+"""writes a class User  inherits from BaseModel"""
 from models.base_model import BaseModel
 
 
 class User(BaseModel):
-    """ Class User """
+    """ Class that defines properties for basemodel """
 
     email = ""
     password = ""
     first_name = ""
     last_name = ""
+
+    def __init__(self, *args, **kwargs):
+        """Creates new instances of User.
+        """
+        super().__init__(*args, **kwargs)

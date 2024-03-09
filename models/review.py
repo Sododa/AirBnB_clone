@@ -1,13 +1,16 @@
 #!/usr/bin/python3
-"""from BaseModel"""
+"""writes a class Review  that inherits from BaseModel"""
 from models.base_model import BaseModel
 
 
 class Review (BaseModel):
-    """
-        place_id (string): id of ci
-        text (string): just a text.
+    """Class that defines properties of Review .basemodel
     """
     place_id = ""
     user_id = ""
     text = ""
+
+    def __init__(self, *args, **kwargs):
+        """defines new instances of Review.
+        """
+        super().__init__(*args, **kwargs)

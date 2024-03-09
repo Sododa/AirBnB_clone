@@ -1,14 +1,11 @@
 #!/usr/bin/python3
-"""Defines a class Place that inherits from BaseModel"""
+"""writes a class Place that inherits from BaseModel"""
 from models.base_model import BaseModel
 
 
 class Place(BaseModel):
-    """ Attributes:
-        city_id (string): id of city.
-        user_id (string): id of user.
-        name (string): name of Place.
-        description (string
+    """Class that defines properties of Place.list (of string
+    )): list of Amenity.id of place.
     """
     city_id = ""
     user_id = ""
@@ -21,3 +18,8 @@ class Place(BaseModel):
     latitude = 0.0
     longitude = 0.0
     amenity_ids = []
+
+    def __init__(self, *args, **kwargs):
+        """Creates an instances of Place.
+        """
+        super().__init__(*args, **kwargs)
